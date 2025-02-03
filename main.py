@@ -26,6 +26,9 @@ dp.message.register(mark_task_done_handler, TaskState.mark_done_awaiting_id)
 dp.message.register(delete_task_handler, lambda message: message.text == "Удалить задачу")
 dp.message.register(confirm_delete_task, TaskState.delete_task_awaiting_id)
 dp.message.register(list_tasks, lambda message: message.text == "Список задач")
+dp.message.register(start, Command("start"))
+dp.message.register(get_phone_number, UserState.phone_number)
+
 
 async def main():
     create_tables()

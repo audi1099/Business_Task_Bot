@@ -14,6 +14,28 @@ class TaskState(StatesGroup):
     mark_done_awaiting_id = State()
     delete_task_awaiting_id = State()
 
+class UserState(StatesGroup):
+    phone_number = State()  # Состояние для ввода номера телефона
+
+
+async def start(message: types.Message):
+    await message.answer("👋 Привет! Пожалуйста, введите ваш номер телефона для авторизации:")
+    await UserState.phone_number.set()
+
+async def get_phone_number(message: types.Message, state: FSMContext):
+    phone_number = message.text.strip()
+
+    # Проверяем, есть ли номер в базе данных
+    if is_phone_number_authorized(phone_number):
+        await message.answer(f"✅ Номер {phone_number} авторизован! Добро пожаловать!")
+        await message.answer("Теперь вы можете управлять задачами.", reply_markup=get_main_keyboard())
+        # Здесь можно сразу показать список задач или предложить добавить задачу
+        await list_tasks(message)  # Например, показываем задачи
+    else:
+        await message.answer("❌ Этот номер не авторизован. Пожалуйста, обратитесь к администратору.")
+
+    await state.clear()  # Очищаем состояние после авторизации
+
 async def start(message: types.Message):
     await message.answer(
         "👋 Привет! Я бот для управления задачами. Выберите действие:",
