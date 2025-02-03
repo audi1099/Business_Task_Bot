@@ -8,6 +8,7 @@ def create_tables():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY,
+            phone_number TEXT UNIQUE NOT NULL,
             registered INTEGER DEFAULT 0,
             register_code TEXT
         )
@@ -48,6 +49,24 @@ def get_tasks():
     conn.close()
     return tasks
 
+
+def is_phone_number_authorized(phone_number: str) -> bool:
+    conn = sqlite3.connect("tasks.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE phone_number = ?", (phone_number,))
+    user = cursor.fetchone()
+    conn.close()
+    return user is not None
+
+def add_user(phone_number: str):
+    conn = sqlite3.connect("tasks.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO users (phone_number) VALUES (?)", (phone_number,))
+        conn.commit()
+    except sqlite3.IntegrityError:
+        pass  # Игнорируем ошибку, если номер уже существует
+    conn.close()
 
 def mark_task_done(task_id):
     try:
