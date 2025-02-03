@@ -16,6 +16,9 @@ print("Запуск бота с ключом:", TOKEN)
 bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
 
+
+dp.message.register(start, Command("start"))
+dp.message.register(get_phone_number, UserState.phone_number)
 dp.message.register(start, Command("start"))
 dp.message.register(process_new_task, lambda message: message.text == "Добавить задачу")
 dp.message.register(get_task_title, TaskState.title)
@@ -26,8 +29,7 @@ dp.message.register(mark_task_done_handler, TaskState.mark_done_awaiting_id)
 dp.message.register(delete_task_handler, lambda message: message.text == "Удалить задачу")
 dp.message.register(confirm_delete_task, TaskState.delete_task_awaiting_id)
 dp.message.register(list_tasks, lambda message: message.text == "Список задач")
-dp.message.register(start, Command("start"))
-dp.message.register(get_phone_number, UserState.phone_number)
+
 
 
 async def main():
