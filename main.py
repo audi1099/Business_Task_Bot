@@ -5,6 +5,13 @@ from aiogram.enums import ParseMode
 from handlers import *
 from database import create_tables
 from config import TOKEN
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+TOKEN = os.getenv("TOKEN")
+print("Запуск бота с ключом:", TOKEN)
 
 bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
