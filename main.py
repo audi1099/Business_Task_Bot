@@ -7,6 +7,13 @@ from database import create_tables
 from config import TOKEN
 import os
 from dotenv import load_dotenv
+from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
+from handlers import start, get_phone_number
+from database import create_tables
+from config import TOKEN
+import asyncio
 
 load_dotenv()
 

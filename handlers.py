@@ -1,11 +1,15 @@
-from aiogram import types
-from aiogram.filters import Command
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 from datetime import datetime
 from database import add_task, mark_task_done, delete_task
 from keyboards import get_main_keyboard
 from database import get_tasks
+from aiogram import types
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+from database import is_phone_number_authorized, add_user
+from keyboards import get_main_keyboard
+
+class UserState(StatesGroup):
+    phone_number = State()  # Состояние для ввода номера телефона
 
 class TaskState(StatesGroup):
     title = State()
@@ -17,6 +21,27 @@ class TaskState(StatesGroup):
 class UserState(StatesGroup):
     phone_number = State()  # Состояние для ввода номера телефона
 
+
+async def start(message: types.Message, state: FSMContext):
+    # Проверяем, есть ли пользователь в базе данных
+    # Для этого запросим номер телефона
+    await message.answer("👋 Привет! Пожалуйста, введите свой номер телефона, чтобы войти в систему:")
+    await state.set_state(UserState.phone_number)  # Переводим в состояние для ввода номера телефона
+
+async def get_phone_number(message: types.Message, state: FSMContext):
+    phone_number = message.text.strip()
+
+    if is_phone_number_authorized(phone_number):
+        # Если номер найден в базе данных, пропускаем регистрацию и даем доступ к функционалу
+        await message.answer(f"✅ Номер {phone_number} авторизован! Добро пожаловать!")
+        await message.answer("Теперь вы можете управлять задачами.", reply_markup=get_main_keyboard())
+        await state.clear()  # Очищаем состояние
+    else:
+        # Если пользователя нет в базе данных, добавляем его
+        add_user(phone_number)
+        await message.answer(f"❌ Номер {phone_number} не был найден. Он был зарегистрирован!")
+        await message.answer("Теперь вы можете управлять задачами.", reply_markup=get_main_keyboard())
+        await state.clear()  # Очищаем состояние
 
 async def start(message: types.Message):
     await message.answer("👋 Привет! Пожалуйста, введите ваш номер телефона для авторизации:")

@@ -50,14 +50,6 @@ def get_tasks():
     return tasks
 
 
-def is_phone_number_authorized(phone_number: str) -> bool:
-    conn = sqlite3.connect("tasks.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE phone_number = ?", (phone_number,))
-    user = cursor.fetchone()
-    conn.close()
-    return user is not None
-
 def add_user(phone_number: str):
     conn = sqlite3.connect("tasks.db")
     cursor = conn.cursor()
@@ -67,6 +59,14 @@ def add_user(phone_number: str):
     except sqlite3.IntegrityError:
         pass  # Игнорируем ошибку, если номер уже существует
     conn.close()
+
+def is_phone_number_authorized(phone_number: str) -> bool:
+    conn = sqlite3.connect("tasks.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE phone_number = ?", (phone_number,))
+    user = cursor.fetchone()
+    conn.close()
+    return user is not None
 
 def mark_task_done(task_id):
     try:
