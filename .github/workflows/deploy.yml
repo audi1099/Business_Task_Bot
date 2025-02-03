@@ -26,7 +26,7 @@ jobs:
 
       - name: Создание .env файла
         run: |
-          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
+          echo "TOKEN=${{ secrets.TOKEN }}" >> .env
 
       - name: Запуск бота
         run: python main.py  # Убедись, что `main.py` использует `.env`
